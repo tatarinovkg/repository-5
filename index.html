@@ -94,23 +94,50 @@
             text-align: left;
         }
 
-        .details-button {
-            background-color: #28a745; /* Green color */
-            display: block;
-            width: 100%;
-            color: white;
-            border: none;
-            border-radius: 8px; /* Same border-radius as the user/admin block */
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-            text-align: center;
-            transition: background-color 0.3s ease;
+        #unblockButton:disabled {
+            background-color: #6faf74; /* Серо-красный цвет */
+            color: #ffffff; /* Белый текст */
+            opacity: 0.8; /* Немного прозрачная */
+            pointer-events: none; /* Отключаем все события для неактивных кнопок, включая hover */
+            transition: background-color 0.3s ease, opacity 0.3s ease; /* Плавная анимация */
         }
 
-        .details-button:hover {
-            background-color: #218838;
+        #unblockButton {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s ease, opacity 0.3s ease; /* Плавная анимация */
+        }
+
+        #unblockButton:hover {
+            background-color: #218838; /* Темно-красный цвет при наведении */
+        }
+
+        /* Стили для неактивной кнопки проверки пароля (серо-синяя) */
+        #checkPasswordButton:disabled {
+            background-color: #a1b8d6; /* Серо-синий цвет */
+            color: #ffffff; /* Белый текст */
+            opacity: 0.8; /* Немного прозрачная */
+            pointer-events: none; /* Отключаем все события для неактивных кнопок, включая hover */
+            transition: background-color 0.3s ease, opacity 0.3s ease; /* Плавная анимация */
+        }
+
+        /* Стили для активной кнопки проверки пароля (синяя) */
+        #checkPasswordButton {
+            background-color: #007bff; /* Синий цвет для активной кнопки */
+            color: #ffffff; /* Белый текст */
+            border: none;
+            transition: background-color 0.3s ease, opacity 0.3s ease; /* Плавная анимация */
+        }
+
+        /* Стили для ховера активной кнопки проверки пароля */
+        #checkPasswordButton:hover {
+            background-color: #0056b3; /* Темно-синий цвет при наведении */
         }
 
         .modal {
@@ -189,22 +216,6 @@
         .modal-input.error {
             border-color: #ff0000;
         }
-
-        .block-button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 1px;
-            transition: background-color 0.3s;
-        }
-
-        .block-button:hover {
-            background-color: #0056b3;
-        }
     </style>
 </head>
 <body>
@@ -276,9 +287,52 @@
                         <h2>UserId: ${user.userID}</h2>
                         <p><strong>Текст блокировки:</strong> ${user.banText}</p>
                         <p><strong>Имя в Telegram</strong> ${user.TGname}</p>
-                        <button class="details-button" onclick="unBlock('${user.userID}')">Разблокировать</button>
+                        <button class="details-button" id="unblockButton" onclick="unBlock('${user.userID}')" disabled>Разблокировать</button>
+                        <label>
+                            <input type="password" id="passwordInput" class="search-input" placeholder="Введите пароль" style="margin-bottom: 10px; margin-top: 10px">
+                        </label>
+                        <button class="search-submit" id="checkPasswordButton" disabled>Проверить пароль</button>
                     `;
                     usersList.appendChild(userDiv);
+                    // Инициализация элементов после их создания
+                    const passwordInput = document.getElementById('passwordInput');
+                    const checkPasswordButton = document.getElementById('checkPasswordButton');
+                    const unblockButton = document.getElementById('unblockButton');
+
+                    // Активируем кнопку проверки, когда введён текст
+                    passwordInput.addEventListener('input', function() {
+                        checkPasswordButton.disabled = passwordInput.value.trim() === '';
+                    });
+
+                    // Проверка пароля
+                    checkPasswordButton.addEventListener('click', async function() {
+                        const password = passwordInput.value.trim();
+                        const response = await fetch('https://louse-precious-sincerely.ngrok-free.app/api/check_password', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ password })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            passwordInput.style.borderColor = 'green';
+                            unblockButton.disabled = false;
+                        } else {
+                            passwordInput.style.borderColor = 'red';
+                            unblockButton.disabled = true;
+                        }
+                    });
+
+                    // Блокируем кнопку удаления, если поле пароля снова пустое
+                    passwordInput.addEventListener('input', function() {
+                        if (passwordInput.value.trim() === '') {
+                            unblockButton.disabled = true;
+                            passwordInput.style.borderColor = ''; // Сбросить обводку
+                        }
+                    });
                 });
             }
         } catch (error) {
@@ -320,9 +374,52 @@
                     <h2>UserId: ${data.data.userID}</h2>
                     <p><strong>Текст блокировки:</strong> ${data.data.banText}</p>
                     <p><strong>Имя в Telegram</strong> ${data.data.TGname}</p>
-                    <button class="details-button" onclick="unBlock('${data.data.userID}')">Разблокировать</button>
-                `;
+                    <button class="details-button" id="unblockButton" onclick="unBlock('${data.data.userID}')" disabled>Разблокировать</button>
+                    <label>
+                        <input type="password" id="passwordInput" class="search-input" placeholder="Введите пароль" style="margin-bottom: 10px; margin-top: 10px">
+                    </label>
+                    <button class="search-submit" id="checkPasswordButton" disabled>Проверить пароль</button>
+                    `;
                     searchResult.appendChild(userDiv);
+                    // Инициализация элементов после их создания
+                    const passwordInput = document.getElementById('passwordInput');
+                    const checkPasswordButton = document.getElementById('checkPasswordButton');
+                    const unblockButton = document.getElementById('unblockButton');
+
+                    // Активируем кнопку проверки, когда введён текст
+                    passwordInput.addEventListener('input', function() {
+                        checkPasswordButton.disabled = passwordInput.value.trim() === '';
+                    });
+
+                    // Проверка пароля
+                    checkPasswordButton.addEventListener('click', async function() {
+                        const password = passwordInput.value.trim();
+                        const response = await fetch('https://louse-precious-sincerely.ngrok-free.app/api/check_password', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ password })
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            passwordInput.style.borderColor = 'green';
+                            unblockButton.disabled = false;
+                        } else {
+                            passwordInput.style.borderColor = 'red';
+                            unblockButton.disabled = true;
+                        }
+                    });
+
+                    // Блокируем кнопку удаления, если поле пароля снова пустое
+                    passwordInput.addEventListener('input', function() {
+                        if (passwordInput.value.trim() === '') {
+                            unblockButton.disabled = true;
+                            passwordInput.style.borderColor = ''; // Сбросить обводку
+                        }
+                    });
                 } else {
                     searchResult.innerHTML = '<p>Пользователь не найден</p>';
                 }
