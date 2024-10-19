@@ -94,7 +94,7 @@
             text-align: left;
         }
 
-        #unblockButton:disabled {
+        [id^="unblockButton"]:disabled {
             background-color: #6faf74; /* Серо-красный цвет */
             color: #ffffff; /* Белый текст */
             opacity: 0.8; /* Немного прозрачная */
@@ -102,7 +102,7 @@
             transition: background-color 0.3s ease, opacity 0.3s ease; /* Плавная анимация */
         }
 
-        #unblockButton {
+        [id^="unblockButton"] {
             background: #28a745;
             color: white;
             border: none;
@@ -114,12 +114,12 @@
             transition: background-color 0.3s ease, opacity 0.3s ease; /* Плавная анимация */
         }
 
-        #unblockButton:hover {
+        [id^="unblockButton"]:hover {
             background-color: #218838; /* Темно-красный цвет при наведении */
         }
 
         /* Стили для неактивной кнопки проверки пароля (серо-синяя) */
-        #checkPasswordButton:disabled {
+        [id^="checkPasswordButton_"]:disabled {
             background-color: #a1b8d6; /* Серо-синий цвет */
             color: #ffffff; /* Белый текст */
             opacity: 0.8; /* Немного прозрачная */
@@ -128,7 +128,7 @@
         }
 
         /* Стили для активной кнопки проверки пароля (синяя) */
-        #checkPasswordButton {
+        [id^="checkPasswordButton_"] {
             background-color: #007bff; /* Синий цвет для активной кнопки */
             color: #ffffff; /* Белый текст */
             border: none;
@@ -136,7 +136,7 @@
         }
 
         /* Стили для ховера активной кнопки проверки пароля */
-        #checkPasswordButton:hover {
+        [id^="checkPasswordButton_"]:hover {
             background-color: #0056b3; /* Темно-синий цвет при наведении */
         }
 
@@ -287,17 +287,17 @@
                         <h2>UserId: ${user.userID}</h2>
                         <p><strong>Текст блокировки:</strong> ${user.banText}</p>
                         <p><strong>Имя в Telegram</strong> ${user.TGname}</p>
-                        <button class="details-button" id="unblockButton" onclick="unBlock('${user.userID}')" disabled>Разблокировать</button>
+                        <button class="details-button unblockButton" id="unblockButton_${user.userID}" onclick="unBlock('${user.userID}')" disabled>Разблокировать</button>
                         <label>
-                            <input type="password" id="passwordInput" class="search-input" placeholder="Введите пароль" style="margin-bottom: 10px; margin-top: 10px">
+                            <input type="password" id="passwordInput_${user.userID}" class="search-input passwordInput" placeholder="Введите пароль" style="margin-bottom: 10px; margin-top: 10px">
                         </label>
-                        <button class="search-submit" id="checkPasswordButton" disabled>Проверить пароль</button>
+                        <button class="search-submit checkPasswordButton" id="checkPasswordButton_${user.userID}" disabled>Проверить пароль</button>
                     `;
                     usersList.appendChild(userDiv);
                     // Инициализация элементов после их создания
-                    const passwordInput = document.getElementById('passwordInput');
-                    const checkPasswordButton = document.getElementById('checkPasswordButton');
-                    const unblockButton = document.getElementById('unblockButton');
+                    const passwordInput = document.getElementById(`passwordInput_${user.userID}`);
+                    const checkPasswordButton = document.getElementById(`checkPasswordButton_${user.userID}`);
+                    const unblockButton = document.getElementById(`unblockButton_${user.userID}`);
 
                     // Активируем кнопку проверки, когда введён текст
                     passwordInput.addEventListener('input', function() {
@@ -374,17 +374,17 @@
                     <h2>UserId: ${data.data.userID}</h2>
                     <p><strong>Текст блокировки:</strong> ${data.data.banText}</p>
                     <p><strong>Имя в Telegram</strong> ${data.data.TGname}</p>
-                    <button class="details-button" id="unblockButton" onclick="unBlock('${data.data.userID}')" disabled>Разблокировать</button>
+                    <button class="details-button" id="unblockButton_${data.data.userID}" onclick="unBlock('${data.data.userID}')" disabled>Разблокировать</button>
                     <label>
-                        <input type="password" id="passwordInput" class="search-input" placeholder="Введите пароль" style="margin-bottom: 10px; margin-top: 10px">
+                        <input type="password" id="passwordInput_${data.data.userID}" class="search-input" placeholder="Введите пароль" style="margin-bottom: 10px; margin-top: 10px">
                     </label>
-                    <button class="search-submit" id="checkPasswordButton" disabled>Проверить пароль</button>
+                    <button class="search-submit" id="checkPasswordButton_${data.data.userID}" disabled>Проверить пароль</button>
                     `;
                     searchResult.appendChild(userDiv);
                     // Инициализация элементов после их создания
-                    const passwordInput = document.getElementById('passwordInput');
-                    const checkPasswordButton = document.getElementById('checkPasswordButton');
-                    const unblockButton = document.getElementById('unblockButton');
+                    const passwordInput = document.getElementById(`passwordInput_${data.data.userID}`);
+                    const checkPasswordButton = document.getElementById(`checkPasswordButton_${data.data.userID}`);
+                    const unblockButton = document.getElementById(`unblockButton_${data.data.userID}`);
 
                     // Активируем кнопку проверки, когда введён текст
                     passwordInput.addEventListener('input', function() {
